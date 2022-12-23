@@ -1,15 +1,11 @@
-# Setting up packages to server:
-# ==> Jenkins
-# ==> GIT
-# ==> Maven
-# ==> Terraform
-# ==> AWS
+# # Description: Setting up packages to server:
+# * Jenkins
+# * GIT
+# * Maven
+# * Terraform
+# * AWS
 
 #!/bin/bash
-
-#change hostname of server
-sudo hostnamectl set-hostname cicd
-
 
 #install curl
 sudo apt update
@@ -42,6 +38,10 @@ unzip awscliv2.zip
 sudo ./aws/install
 rm -r aws*
 
+#change hostname of server
+sudo hostnamectl set-hostname jenkins
+#reboot system for changing hostname name
+sudo reboot
 
 #check versions of installed packeges
 echo "            
@@ -63,8 +63,4 @@ aws --version
 echo "*************Jenkins Password************"
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
-
 sleep 3
-
-#reboot system for changing hostname name
-sudo reboot
