@@ -1,41 +1,19 @@
-CI/CD pipeline
-1) On local machine (Ubuntu) run script from folder 1_Jenkins. It install:
-   - Jenkins
-   - GIT
-   - Maven
-   - Terraform
-   - AWS
-2) 
+**_CI/CD pipeline:_**
 
+- [ ] **CI**
 
+1. On local machine (Ubuntu) run script 1_Jenkins\/1.1_install_packages.sh It will install:
 
+- Jenkins
+- GIT
+- Maven
+- Terraform
+- AWS
 
+2. In Jenkins create token and run script 1_Jenkins\/1.2_install_jenkins_plugins.sh It will install plugins:
 
- **********/ CI  /**********
- |
- |      ---------
- |     |  Maven  |
- |      ---------
- |          ^
- |          |
- |     build code
- |          |
- |     -----------           -------------           -------------       ---------------
- |    |  Jenkins  |  <----  |  localhost  |  ---->  |  Terraform  |====>|  EC2: Tomcat  |
- |     -----------           -------------           -------------       ---------------
- |          ^
- |          |
- |      pull code
- |          |
- |     ----------
- |    |  GitHub  |
- |     ----------
- |          ^
- |          |
- |     commit code
- |          |
- |      ---------
- |     |   GIT   |
- |     ---------
- |
- **********/ CI  /********** 
+- GIT
+- Maven
+- Deploy (pack Java war file to docker container)
+
+* [ ] **CD**
