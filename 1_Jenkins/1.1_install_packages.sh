@@ -38,10 +38,11 @@ unzip awscliv2.zip
 sudo ./aws/install
 rm -r aws*
 
+echo "Clone GIT repo with project files"
+git clone https://github.com/b-c-v/CI-CD-Project.git ~/Downloads/project
+
 #change hostname of server
 sudo hostnamectl set-hostname jenkins
-#reboot system for changing hostname name
-sudo reboot
 
 #check versions of installed packeges
 echo "            
@@ -63,4 +64,6 @@ aws --version
 echo "*************Jenkins Password************"
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
+echo "To change the hostname, the system will reboot after 3 seconds or press Ctrl+C"
 sleep 3
+sudo reboot

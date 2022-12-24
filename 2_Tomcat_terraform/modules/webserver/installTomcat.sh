@@ -1,12 +1,15 @@
 #!/bin/bash
 
 #change hostname of instance
-hostnamectl set-hostname tomcat
+sudo hostnamectl set-hostname tomcat
 
 #install java
-yum update –y
-amazon-linux-extras install java-openjdk11 -y
+sudo yum update –y
+sudo amazon-linux-extras install java-openjdk11 -y
 
 #install tomcat
-yum update -y
-yum install httpd -y
+cd /opt/
+sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
+sudo tar -xzf apache-tomcat-10.0.27.tar.gz
+sudo mv apache-tomcat-10.0.27 tomcat
+sudo rm apache-tomcat-10.0.27.tar.gz
