@@ -1,6 +1,6 @@
-#!/bin/bash
+# Description: Install plugins in Jenkins
 
-# Description: Install Jenkins plugins
+#!/bin/bash
 
 #Credentials
 echo "Enter username: "
@@ -10,11 +10,12 @@ echo "Enter token:" # Manage Jenkins==>Manage Users==>user_name==>Configure==>AP
 read token 
 
 #copy Jenkins-cle.jar file to current directory"
-wget http://localhost:8080/jnlpJars/jenkins-cli.jar
+wget -nc http://localhost:8080/jnlpJars/jenkins-cli.jar #-nc  skip downloads that would download to existing files ()
 
 #Array of plugin names to be installed
 plugin_name=(
     git                   #https://plugins.jenkins.io/git/
+    github                #https://plugins.jenkins.io/github/
     maven-plugin          #https://plugins.jenkins.io/maven-plugin/
     deploy                #https://plugins.jenkins.io/deploy/
 )

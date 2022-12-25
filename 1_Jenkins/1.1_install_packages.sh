@@ -1,4 +1,4 @@
-# # Description: Setting up packages to server:
+# Description: Install packeges on Ubuntu server:
 # * Jenkins
 # * GIT
 # * Maven
