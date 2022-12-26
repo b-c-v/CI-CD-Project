@@ -18,6 +18,7 @@ plugin_name=(
     github                #https://plugins.jenkins.io/github/
     maven-plugin          #https://plugins.jenkins.io/maven-plugin/
     deploy                #https://plugins.jenkins.io/deploy/
+    publish-over-ssh      #https://plugins.jenkins.io/publish-over-ssh/ (use for Docker)
 )
 
 #Loop for installing plugins
