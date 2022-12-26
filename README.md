@@ -4,17 +4,17 @@
 
 1. Install Jenkins:
 
-   1. On local machine (Ubuntu) and run script 1_Jenkins\/1.1_install_packages.sh
-   2. If you want to use webhook from GitHub to Jenkins it's necessary use EC2 Instance with public IP. Run script \1_Jenkins\/1.1.1_install_packages_AmazonLinux on EC2.
+- On local machine (Ubuntu) and run script 1_Jenkins\/1.1_install_packages.sh
+- If you want to use webhook from GitHub to Jenkins for CI process - it's necessary use AmazonLinux EC2 Instance with public IP. Run script \1_Jenkins\/1.1.1_install_packages_AmazonLinux on EC2.
 
-   They will:
+  They will:
 
-   - install Jenkins
-   - install GIT
-   - install Maven
-   - install Terraform
-   - install AWS (only on Ubuntu)
-   - clone all configuration files from this repo to folder Download
+  - install Jenkins
+  - install GIT
+  - install Maven
+  - install Terraform
+  - install AWS (only on Ubuntu)
+  - clone all configuration files from this repo to folder Download
 
 2. Install plugins Jenkins: in Jenkins settings create token (Manage Jenkins==>Manage Users==>user_name==>Configure==>API Token==>Add new token) and run script 1_Jenkins\/1.2_install_jenkins_plugins.sh It will install plugins:
 
@@ -23,13 +23,15 @@
 - Deploy (pack Java war file to docker container)
 - GitHub (trigger to run build project after push changes to git repo)
 
-3. Create EC2 instance with Tomcat:
-   - terraform init and terraform apply project in folder 2_Tomcat_terraform. During instance initialization will:
+3. Create AmazonLinux EC2 instance with Tomcat:
 
-- change hostname
-- install Java
-- install Tomcat
-  - Or on EC2Instance run script 2_Tomcat_terraform\/modules\/webserver\/installTomcat.sh
+- terraform init and terraform apply project in folder 2_Tomcat_terraform. During instance initialization will:
+
+  - change hostname
+  - install Java
+  - install Tomcat
+
+- Or in AmazonLinux run script 2_Tomcat_terraform\/modules\/webserver\/installTomcat.sh
 
 4. Manually configure Tomcat:
 
@@ -58,10 +60,15 @@
   ![](images/mvn_project_4.jpg)
   ![](images/mvn_project_5.jpg)
   ![](images/mvn_project_6.jpg)
-  **_CI project Git==>GitHub==>Jenkins==>Tomcat is ready_**
+  ***
+  **CI project Git==>GitHub==>Jenkins is ready**
+  ![](images/CI.jpg)
 
 6. Install Docker:
-   - In AmazonLinux run script 3_Docker\/install_docker.sh
-   - copy 3_Docker\/Dockerfile and run command "docker image build -t cicd ."
+
+- In AmazonLinux run script 3_Docker\/install_docker.sh
+- copy 3_Docker\/Dockerfile and run command "docker image build -t cicd ."
+
+---
 
 - [ ] **CD**
