@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <maven2-moduleset plugin="maven-plugin@3.20">
   <actions/>
-  <description>CI/CD project with Tomcat</description>
+  <description>CI/CD project with Docker</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -65,17 +65,46 @@
   <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
   <reporters/>
   <publishers>
-    <hudson.plugins.deploy.DeployPublisher plugin="deploy@1.16">
-      <adapters>
-        <hudson.plugins.deploy.tomcat.Tomcat8xAdapter>
-          <credentialsId>tomcat_deployer_ID</credentialsId>
-          <url>http://52.91.89.14:8080</url>
-          <path></path>
-        </hudson.plugins.deploy.tomcat.Tomcat8xAdapter>
-      </adapters>
-      <war>**/*.war</war>
-      <onFailure>false</onFailure>
-    </hudson.plugins.deploy.DeployPublisher>
+    <jenkins.plugins.publish__over__ssh.BapSshPublisherPlugin plugin="publish-over-ssh@1.24">
+      <consolePrefix>SSH: </consolePrefix>
+      <delegate plugin="publish-over@0.22">
+        <publishers>
+          <jenkins.plugins.publish__over__ssh.BapSshPublisher plugin="publish-over-ssh@1.24">
+            <configName>docker-server</configName>
+            <verbose>false</verbose>
+            <transfers>
+              <jenkins.plugins.publish__over__ssh.BapSshTransfer>
+                <remoteDirectory>//opt//docker</remoteDirectory>
+                <sourceFiles>webapp/target/*.war</sourceFiles>
+                <excludes></excludes>
+                <removePrefix>webapp/target</removePrefix>
+                <remoteDirectorySDF>false</remoteDirectorySDF>
+                <flatten>false</flatten>
+                <cleanRemote>false</cleanRemote>
+                <noDefaultExcludes>false</noDefaultExcludes>
+                <makeEmptyDirs>false</makeEmptyDirs>
+                <patternSeparator>[, ]+</patternSeparator>
+                <execCommand>cd /opt/docker;
+docker image build -t tomcatcicd:latest .;
+docker container stop  tomcatcicd;
+docker container rm tomcatcicd;
+docker container run -d --name tomcatcicd -p 8519:8080 tomcatcicd:latest;</execCommand>
+                <execTimeout>120000</execTimeout>
+                <usePty>false</usePty>
+                <useAgentForwarding>false</useAgentForwarding>
+                <useSftpForExec>false</useSftpForExec>
+              </jenkins.plugins.publish__over__ssh.BapSshTransfer>
+            </transfers>
+            <useWorkspaceInPromotion>false</useWorkspaceInPromotion>
+            <usePromotionTimestamp>false</usePromotionTimestamp>
+          </jenkins.plugins.publish__over__ssh.BapSshPublisher>
+        </publishers>
+        <continueOnError>false</continueOnError>
+        <failOnError>false</failOnError>
+        <alwaysPublishFromMaster>false</alwaysPublishFromMaster>
+        <hostConfigurationAccess class="jenkins.plugins.publish_over_ssh.BapSshPublisherPlugin" reference="../.."/>
+      </delegate>
+    </jenkins.plugins.publish__over__ssh.BapSshPublisherPlugin>
   </publishers>
   <buildWrappers/>
   <prebuilders/>

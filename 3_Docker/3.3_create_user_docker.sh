@@ -15,6 +15,11 @@ sudo usermod -aG docker $user
 echo "Please enter a password for new user:"
 sudo passwd $user
 
+#create directory for project and change ovner of this directory to created user
+sudo mkdir /opt/docker
+sudo chown -R $user:$user /opt/docker/
+
+
 echo "
 *************************************************************************************************************************************
 Don't forget to uncomment line 'PasswordAuthentication yes' and comment line 'PasswordAuthentication no' in file /etc/ssh/sshd_config

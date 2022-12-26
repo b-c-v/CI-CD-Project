@@ -66,9 +66,7 @@
   ![](images/mvn_project_6.jpg)
 - or from file 1_Jenkins/CICD_Tomcat.xml export settings of this project (command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth user:token -webSocket create-job Tomcat_CI_CD < CICD_Tomcat.xml)
 
----
-
-## CI project is ready (Git==>GitHub==>Jenkins==>Maven)
+### CI project is ready (Git==>GitHub==>Jenkins==>Maven)
 
 ![](images/CI.jpg)
 
@@ -82,4 +80,26 @@
 - run script 3_Docker/install_docker.sh
 - create a user under which Jenkins will connect to the server. Run script 3_Docker/3.3_create_user_docker.sh
 
-2. Create project in Jenkins
+2. Manually configure Jenkins:
+
+- Manage Jenkins ==> Configure System ==> Publish over SSH add IP address of Docker-server, username and password created user.
+  ![](images/docker_jenk_1.jpg)
+  ![](images/docker_jenk_2.jpg)
+
+  \*Better solution is to use an SSH key, but next I want to use Ansible + DockerHub + Kubernetes, and therefore ,in this case, it is not very important
+
+3. Create new Item (Maven project):
+   ![](images/docker_project_1.jpg)
+   ![](images/docker_project_2.jpg)
+   ![](images/docker_project_3.jpg)
+   ![](images/docker_project_4.jpg)
+   ![](images/docker_project_5.jpg)
+   ![](images/docker_project_6.jpg)
+
+   - script to section "Exec command" is in file 3_Docker/3.4_script_to_project.txt
+
+- or from file 1_Jenkins/CICD_Docker.xml export settings of this project (command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth user:token -webSocket create-job Docker_CI_CD < CICD_Docker.xml)
+
+### CI/CD project is ready (Git==>GitHub==>Jenkins==>Maven==>Tomcat&Docker)
+
+![](images/CI-CD-docker.jpg)

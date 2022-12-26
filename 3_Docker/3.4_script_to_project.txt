@@ -1,0 +1,7 @@
+#This script necessary add to section "Exec command" in Jenkins project
+
+cd /opt/docker;
+docker image build -t tomcatcicd:latest .;
+docker container stop  tomcatcicd;
+docker container rm tomcatcicd;
+docker container run -d --name tomcatcicd -p 8519:8080 tomcatcicd:latest;
