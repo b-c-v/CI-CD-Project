@@ -1,6 +1,11 @@
-#Description: Install Docker on AmazonLinux server
+#Description: Change hostname of the server and install Docker on AmazonLinux
 
 #!/bin/bash
+
+#change hostname of server
+sudo hostnamectl set-hostname jenkins
+
+#install Docker
 sudo yum update
 sudo yum install docker -y
 

@@ -72,7 +72,7 @@
 
 ---
 
-## Continuous delivery/deployment (CD)
+## Continuous delivery/deployment (CD) Docker
 
 1. Install Docker:
 
@@ -103,3 +103,5 @@
 ### CI/CD project is ready (Git==>GitHub==>Jenkins==>Maven==>Tomcat&Docker)
 
 ![](images/CI-CD-docker.jpg)
+
+## Continuous delivery/deployment (CD) Ansible

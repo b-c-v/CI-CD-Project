@@ -1,4 +1,4 @@
-#Description: Install Tomcat on AmazonLinux server
+#Description: Change hostname of the serverver and install Tomcat on AmazonLinux
 
 #!/bin/bash
 

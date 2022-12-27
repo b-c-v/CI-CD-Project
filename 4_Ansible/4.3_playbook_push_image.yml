@@ -1,0 +1,13 @@
+- name: Create Docker image with Ansible
+  hosts: ansible
+  tasks:
+    - name: create Docker image
+      command: docker image build -t tomcatcicd:latest .
+      args:
+        chdir: /opt/docker
+
+    - name: Add tag do Docker image
+      command: docker image tag tomcatcicd:latest dqqm/tomcatcicd:latest
+
+    - name: Push image to DockerHub
+      command: docker image push dqqm/tomcatcicd:latest
