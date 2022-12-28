@@ -1,3 +1,4 @@
+---
 - name: Create Docker image with Ansible
   hosts: ansible
   tasks:

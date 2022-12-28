@@ -6,7 +6,7 @@
 echo "Enter username:"
 read user
 
-#add user wiht name dockercicd to system
+#add user with name dockercicd to system
 sudo useradd $user
 
 #add created user to group docker
@@ -15,7 +15,7 @@ sudo usermod -aG docker $user
 echo "Please enter a password for new user:"
 sudo passwd $user
 
-#create directory for project and change ovner of this directory to created user
+#create directory for project and change owner of this directory to created user
 sudo mkdir /opt/docker
 sudo chown -R $user:$user /opt/docker/
 

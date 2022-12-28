@@ -1,3 +1,4 @@
+---
 - name: Run Docker container with Java app on Tomcat server
   hosts: docker
 

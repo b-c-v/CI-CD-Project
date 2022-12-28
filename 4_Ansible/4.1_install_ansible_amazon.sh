@@ -5,8 +5,14 @@ sudo hostnamectl set-hostname ansible
 
 #!/bin/bash
 
-#inatall Ansible
+#install Ansible
 sudo amazon-linux-extras install ansible2
 
+
+#install Docker
+sudo amazon-linux-extras install ansible2
+sudo yum install docker -y
+sudo systemctl enable docker.service
+sudo systemctl start docker.service
 
 
