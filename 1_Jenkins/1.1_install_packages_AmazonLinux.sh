@@ -23,11 +23,23 @@ sudo systemctl start jenkins # Start Jenkins as a service
 #install Git
 sudo yum install -y git
 
-#instal Maven v3.8.6
+#instal Maven
 sudo yum install -y maven
 
-#install Terraform
-curl https://releases.hashicorp.com/terraform/1.3.6/terraform_1.3.6_linux_amd64.zip -o terraform.zip
-unzip terraform.zip
-sudo mv terraform /bin/
-rm terraform.zip
+#check versions of installed packages
+echo "            
+===============================================
+¯\_(ツ)_/¯     Installation completed     
+==============================================="
+echo "******************JAVA*******************"
+java --version
+echo "*******************GIT*******************"
+git --version
+echo "******************MAVEN******************"
+mvn --version
+echo "*****************Jenkins*****************"
+jenkins --version
+echo "*******************AWS*******************"
+aws --version
+echo "*************Jenkins Password************"
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword

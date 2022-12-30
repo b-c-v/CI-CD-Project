@@ -32,4 +32,3 @@ echo "
 ¯\_(ツ)_/¯       Restarting Jenkins     
 ==============================================="
 java -jar jenkins-cli.jar -s http://localhost:8080/ -auth $user:$token safe-restart
-
