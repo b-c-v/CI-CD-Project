@@ -1,3 +1,0 @@
-ansible-playbook /opt/docker/4.3_playbook_push_image.yml;
-sleep 10;
-ansible-playbook /opt/docker/4.4_playbook_run_container.yml;

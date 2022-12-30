@@ -1,151 +1,126 @@
-# CI/CD pipeline
+# v1.0 CI/CD pipeline
 
-## 1. Continuous integration (CI)
+**_Description:_**
 
-1. **_Install Jenkins:_**
+CI/CD project Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Web Server
 
-- On local machine (Ubuntu) and run script 1_Jenkins/1.1_install_packages.sh
-- If you want to use webhook from GitHub to Jenkins for CI process - it's necessary use AmazonLinux EC2 Instance with public IP. Run script 1_Jenkins/1.1.1_install_packages_AmazonLinux on EC2.
+When making changes to the GitHub repository with the simple Java application - Jenkins starts the process of building and testing it with Maven and transfers to Ansible server. Ansible starts the process of building the Docker image and copying it to DockerHub. After that, this image is uploaded from DockerHub to the Docker server and running.
 
-  They will:
-
-  - install Jenkins
-  - install GIT
-  - install Maven
-  - install Terraform
-  - install AWS (only on Ubuntu)
-  - clone all configuration files from this repo to folder Download
-
-2. **_Install Jenkins plugins:_**
-
-- in Jenkins settings create token (Manage Jenkins==>Manage Users==>user_name==>Configure==>API Token==>Add new token) and run script 1_Jenkins/1.2_install_jenkins_plugins.sh
-  It will install plugins:
-
-  - GIT
-  - Maven
-  - Deploy (pack Java war file to docker container)
-  - GitHub (trigger to run build project after push changes to git repo)
-  - Publish over SSH (for connection to Docker-server and Ansible-server)
-
-3. **_Create AmazonLinux EC2 instance with Tomcat:_**
-
-- "terraform init" and "terraform apply" project in folder 2_Tomcat_terraform. During instance initialization will:
-
-  - change hostname
-  - install Java
-  - install Tomcat
-
-- Or on AmazonLinux run script 2_Tomcat_terraform/modules/webserver/installTomcat.sh
-
-4. **_Trigger to automatically start a job in Jenkins when some changes are made to the github repository (Jenkins-server static external IP is required)_**
-
-- in setting up the github repository with the project, specify the address of Jenkins-server and type of events to trigger this webhook
-
-- in setting of Jenkins project specify the address of GitHub repo and put mark near GitHub hook trigger
-  ![](images/docker_project_2.jpg)
-  ![](images/docker_project_4.jpg)
-
-5. **_Manually configure Tomcat:_**
-
-- comment in files /opt/tomcat/webapps/host-manager/META-INF/context.xml and /opt/tomcat/webapps/manager/META-INF/context.xml line <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />
-- add users to file /opt/tomcat/conf/tomcat-users.xml
-  <role rolename="manager-gui"/>
-  <role rolename="manager-script"/>
-  <role rolename="manager-jmx"/>
-  <role rolename="manager-status"/>
-  <user username="admin" password="your_password" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
-  <user username="deployer" password="your_password" roles="manager-script"/>
-  <user username="tomcat" password="your_password" roles="manager-gui"/>
-
-6. **_Manually configure Jenkins:_**
-
-- Manage Jenkins ==> Global Tool Configuration configure GIT, JDK and Maven
-  ![](images/glob_conf_1.jpg)
-  ![](images/glob_conf_2.jpg)
-  ![](images/glob_conf_3.jpg)
-- Add credentials to connect with Tomcat server
-  ![](images/jenk_cred_1.jpg)
-- Create new Item (Maven project)
-  ![](images/mvn_project_1.jpg)
-  ![](images/mvn_project_2.jpg)
-  ![](images/mvn_project_3.jpg)
-  ![](images/mvn_project_4.jpg)
-  ![](images/mvn_project_5.jpg)
-  ![](images/mvn_project_6.jpg)
-- or from file 1_Jenkins/CICD_Tomcat.xml export settings of this project (command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth user:token -webSocket create-job Tomcat_CI_CD < CICD_Tomcat.xml)
-
-### CI project is ready (Git==>GitHub==>Jenkins==>Maven)
-
-![](images/CI.jpg)
+![](images/CI-CD-ansible.jpg)
 
 ---
 
-## 2. Continuous delivery/deployment (CD) Docker
+## 1. Docker server
 
-1. **_Install Docker:_**
+### 1.1 launch AmazonLinux EC2 Instance and create a new Security group (allowing SSH and HTTP).
 
-- create EC2 instance in some security group with Jenkins
-- run script 3_Docker/3.1_install_docker.sh
-- create a user under which Jenkins will connect to the server. Run script 3_Docker/3.3_create_user_docker.sh
+### 1.2 connect via SSH to instance, download to it and run a script [2.1_install_docker.sh](2_Docker/2.1_install_docker.sh) and it will install Docker and change hostname.
 
-2. **_Copy file 3_Docker/Dockerfile to folder /opt/docker_**
+### 1.3 create a user under which Jenkins will connect to the server. Download to it and run a script [2.2_create_user_docker.sh](2_Docker/2.2_create_user_docker.sh)
 
-3. **_Manually configure Jenkins:_**
+### 1.4 create a user under which Ansible will connect to the server. Download to it and run a script [2.3_create_user_ansible.sh](2_Docker/2.3_create_user_ansible.sh)
 
-- Manage Jenkins ==> Configure System ==> Publish over SSH add IP address of Docker-server, username and password created user.
-  ![](images/docker_jenk_1.jpg)
-  ![](images/docker_jenk_2.jpg)
+---
 
-  \*A better solution is to use an SSH key
+## 2. Ansible server
 
-4. **_Create new Item (Maven project):_**
-   ![](images/docker_project_1.jpg)
-   ![](images/docker_project_2.jpg)
-   ![](images/docker_project_3.jpg)
-   ![](images/docker_project_4.jpg)
-   ![](images/docker_project_5.jpg)
-   ![](images/docker_project_6.jpg)
+### 2.1 launch a second AmazonLinux EC2 Instance and connect to the same security group as the previous one.
 
-   - script to section "Exec command" is in file 3_Docker/3.4_script_to_project.txt
+### 2.2 connect via SSH to instance, download to it and run a script [3.1_install_ansible_amazon.sh](3_Ansible/3.1_install_ansible_amazon.sh) and it will install Ansible, Docker and change hostname.
 
-- or from file 1_Jenkins/CICD_Docker.xml export settings of this project (command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth user:token -webSocket create-job Docker_CI_CD < CICD_Docker.xml)
+### 2.3 create a user under which Ansible will connect to the Docker-server and the working directory of the project _(/opt/docker/)_. Run script [3.2_create_user_ansible.sh](3_Ansible/3.2_create_user_ansible.sh)
 
-### CI/CD project is ready (Git==>GitHub==>Jenkins==>Maven==>Tomcat&Docker)
+### 2.4 change SSH-keys with servers:
 
-![](images/CI-CD-docker.jpg)
+- generate SSH-key for created user:
 
-## 3. Continuous delivery/deployment (CD) Ansible
+```bash
+su *your_user_name*
+ssh-keygen
+```
 
-1. **_Install Ansible:_**
+- exchange ssh-key
 
-- create EC2 instance in some security group with Jenkins-server and Docker-server
-- run script 4_Ansible/4.1_install_ansible_amazon.sh and it will install Ansible and Docker.
-- create a user under which Ansible will connect to the Docker-server. Run script 3_Docker/3.3_create_user_docker.sh
+```bash
+ssh-copy-id *ip_localhost* #it's necessary to exchange the SSH-key with the local server on behalf of the created user
+ssh-copy-id *ip_docker_server*
+```
 
-2. **_Copy files to folder /opt/docker files:_**
+### 2.5 Login to DockerHub:
 
-- 4_Ansible/Dockerfile to
-- 4_Ansible/4.3_playbook_push_image.yml
-- 4_Ansible/4.4_playbook_run_container.yml
+```bash
+docker login
+```
 
-3. **_Manually configure Jenkins:_**
+### 2.6 Copy files to directory _(/opt/docker/)_:
 
-- Manage Jenkins ==> Configure System ==> Publish over SSH add IP address of Ansible-server, username and password created user.
+- [Dockerfile](3_Ansible/Dockerfile)
+- [3.3_playbook_push_image.yml](3_Ansible/3.3_playbook_push_image.yml)
+- [3.4_playbook_run_container.yml](3_Ansible/3.4_playbook_run_container.yml)
+
+---
+
+## 3. Jenkins server
+
+### 3.1 Launch a third AmazonLinux EC2 Instance and connect to the same security group as the previous two.
+
+### 3.2 connect via SSH to instance, download to it and run a script [1.1_install_packages_AmazonLinux.sh](1_Jenkins\1.1_install_packages_AmazonLinux.sh)
+
+It will install:
+
+- Jenkins and Java
+- GIT
+- Maven
+- rename hostname to "jenkins"
+
+### 3.3 In Jenkins settings create token (Manage Jenkins==>Manage Users==>_your_user_name_==>Configure==>API Token==>Add new token) and run script [1.2_install_jenkins_plugins.sh](1_Jenkins/1.2_install_jenkins_plugins.sh)
+
+It will install plugins:
+
+- GIT
+- Maven
+- Deploy (pack Java war file to docker container)
+- GitHub (trigger to run build project after push changes to git repo)
+- Publish over SSH (for connection to Docker-server and Ansible-server)
+
+### 3.4 Create trigger to automatically start a job in Jenkins, when some changes are made to the GitHub repository
+
+- in settings GitHub repository with the project, specify the address of Jenkins-server and type of events to trigger this webhook _(http://ip_jenkins_server:8080/github-webhook/)_
+  ![](images\webhook_git.jpg)
+
+### 3.5 Manually configure Jenkins
+
+- Manage Jenkins ==> Configure System ==> Publish over SSH add IP address of Ansible-server, username and created user password.
+
   ![](images/ansible_ssh.jpg)
-  \*A better solution is to use an SSH key
 
-4. **_Create new Item (Maven project):_**
-   ![](images/ansible_project1.jpg)
-   ![](images/docker_project_2.jpg)
-   ![](images/docker_project_3.jpg)
-   ![](images/docker_project_4.jpg)
-   ![](images/docker_project_5.jpg)
-   ![](images/ansible_project6.jpg)
+  > A better solution is to use an SSH key
 
-- script to section "Exec command" is in file 3_Docker/3.4_script_to_project.txt
+- Manage Jenkins ==> Global Tool Configuration ==> configure GIT, JDK and Maven
+  ![](images/glob_conf_1.jpg)
+  ![](images/glob_conf_2.jpg)
+  ![](images/glob_conf_3.jpg)
 
-- or from file 1_Jenkins/CICD_Ansible.xml export settings of this project (command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth user:token -webSocket create-job Ansible_CI_CD < CICD_Ansible.xml)
+### 3.6 Create new Item (Maven project)
 
-### CI/CD project is ready (Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Web Server)
+![](images/project_1.jpg)
+![](images/project_2.jpg)
+![](images/project_3.jpg)
+![](images/project_4.jpg)
+![](images/project_5.jpg)
+![](images/project_6.jpg)
+![](images/project_7.jpg)
 
-![](images/CI-CD-ansible.jpg)
+> script to section "Exec command" is in file [3.5_script_to_project.txt](3_Ansible\3.5_script_to_project.txt)
+
+- or from file [CICD_Ansible.xml](1_Jenkins/CICD_Ansible.xml) export settings of this project:
+
+```bash
+java -jar jenkins-cli.jar -s http://localhost:8080/ -auth *your_user:your_token* -webSocket create-job Ansible_CI_CD < CICD_Ansible.xml)
+```
+
+---
+
+## If you type in a link `http://ip_docker_server/webapp` in a browser, you can see
+
+![](images/registration_form.jpg)

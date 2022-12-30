@@ -13,6 +13,7 @@
 
     - name: remove existing image
       command: docker image rm dqqm/tomcatcicd:latest
+      ignore_errors: yes
 
     - name: run Docker container on remote server
-      command: docker container run -d --name tomcatcicd -p 8519:8080 dqqm/tomcatcicd:latest
+      command: docker container run -d --name tomcatcicd -p 80:8080 dqqm/tomcatcicd:latest

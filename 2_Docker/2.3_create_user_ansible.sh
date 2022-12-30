@@ -17,15 +17,6 @@ sudo chmod 777 /var/run/docker.sock
 
 echo "
 *************************************************************************************************************************************
-Don't forget to uncomment line 'PasswordAuthentication yes' and comment line 'PasswordAuthentication no' in file /etc/ssh/sshd_config
-*************************************************************************************************************************************"
-echo "File will open after 3 seconds"
-sleep 3
-sudo nano /etc/ssh/sshd_config
-
-
-echo "
-*************************************************************************************************************************************
 In file find line:
 ## Allows people in group wheel to run all commands
 %wheel  ALL=(ALL)       ALL
@@ -35,14 +26,10 @@ and add new line (**username** is name of the user you just created):
 **username** ALL=(ALL)   ALL
 
 *************************************************************************************************************************************"
-echo "File will open after 3 seconds"
-sleep 3
+echo "File will open after 5 seconds"
+sleep 5
 sudo visudo
 
 #restart SSH server
 echo "Restart SSH server"
 sudo service sshd reload
-
-
-
-

@@ -4,6 +4,10 @@
   <description>CI/CD project with Ansible</description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.36.0">
+      <projectUrl>git@github.com:b-c-v/Java-for-CI-CD.git/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
     <jenkins.model.BuildDiscarderProperty>
       <strategy class="hudson.tasks.LogRotator">
         <daysToKeep>-1</daysToKeep>
@@ -12,16 +16,12 @@
         <artifactNumToKeep>-1</artifactNumToKeep>
       </strategy>
     </jenkins.model.BuildDiscarderProperty>
-    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.36.0">
-      <projectUrl>git@github.com:b-c-v/Java-for-CICD.git/</projectUrl>
-      <displayName></displayName>
-    </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@4.14.3">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>https://github.com/b-c-v/Java-for-CICD.git</url>
+        <url>https://github.com/b-c-v/Java-for-CI-CD.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -84,9 +84,9 @@
                 <noDefaultExcludes>false</noDefaultExcludes>
                 <makeEmptyDirs>false</makeEmptyDirs>
                 <patternSeparator>[, ]+</patternSeparator>
-                <execCommand>ansible-playbook /opt/docker/playbook.yml;
+                <execCommand>ansible-playbook /opt/docker/3.3_playbook_push_image.yml;
 sleep 10;
-ansible-playbook /opt/docker/container.yml;</execCommand>
+ansible-playbook /opt/docker/3.4_playbook_run_container.yml;</execCommand>
                 <execTimeout>120000</execTimeout>
                 <usePty>false</usePty>
                 <useAgentForwarding>false</useAgentForwarding>
@@ -108,9 +108,9 @@ ansible-playbook /opt/docker/container.yml;</execCommand>
   <prebuilders/>
   <postbuilders/>
   <runPostStepsIfResult>
-    <name>FAILURE</name>
-    <ordinal>2</ordinal>
-    <color>RED</color>
+    <name>SUCCESS</name>
+    <ordinal>0</ordinal>
+    <color>BLUE</color>
     <completeBuild>true</completeBuild>
   </runPostStepsIfResult>
 </maven2-moduleset>

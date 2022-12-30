@@ -1,4 +1,4 @@
-#Description: create user for password connection from Jenkins to Ansible (better use SSH-keys)
+#Description: create user for password connection from Jenkins to Ansible (better use SSH-keys) and the working directory of the project
 
 #!/bin/bash
 
@@ -22,10 +22,6 @@ sudo chown -R $user:$user /opt/docker/
 #change permissions to file because during creating docker image will be error "Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: …"
 sudo chmod 777 /var/run/docker.sock
 
-#generate SSH-key for created user
-su $user
-ssh-keygen
-
 
 echo "
 *************************************************************************************************************************************
@@ -45,8 +41,8 @@ xxx.xxx.xxx.xxx
 xxx.xxx.xxx.xxx
 *************************************************************************************************************************************"
 ip add
-echo "File will open after three seconds"
-sleep 3
+echo "File will open after 5 seconds"
+sleep 5
 sudo nano /etc/ansible/hosts
 
 echo "
@@ -60,22 +56,10 @@ and add new line below (**username** is name of the user you just created):
 **username** ALL=(ALL)   ALL
  
 *************************************************************************************************************************************"
-echo "File will open after 3 seconds"
-sleep 3
+echo "File will open after 5 seconds"
+sleep 5
 sudo visudo
 
 #restart SSH server
 echo "Restart SSH server"
 sudo service sshd reload
-
-#exchange ssh-key with servers
-sudo su ansiblecicd
-#Credentials
-echo "Enter IP address of server with Docker:"
-read ip_docker
-ssh-copy-id ip_docker
-
-echo "Enter IP address of this server:"
-read ip_localhost
-ssh-copy-id ip_localhost
-
