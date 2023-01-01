@@ -23,7 +23,7 @@ module "vpc" {                              #use external module from https://re
   source  = "terraform-aws-modules/vpc/aws" #link to online repo
   version = "3.18.1"                        #if don't prescribe will download latest version
 
-  name = "my-vpc"
+  name = "CICD-vpc"
   cidr = var.main_vpc_cidr_block
 
   azs            = [var.main_avail_zone]
@@ -31,6 +31,9 @@ module "vpc" {                              #use external module from https://re
   public_subnet_tags = {
     Name = "${var.main_env_prefix}-subnet-1"
   }
+
+  # enable_nat_gateway = true
+  # enable_vpn_gateway = true
 
   tags = {
     Name = "${var.main_env_prefix}-vpc"
