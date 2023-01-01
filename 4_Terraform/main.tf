@@ -32,9 +32,6 @@ module "vpc" {                              #use external module from https://re
     Name = "${var.main_env_prefix}-subnet-1"
   }
 
-  # enable_nat_gateway = true
-  # enable_vpn_gateway = true
-
   tags = {
     Name = "${var.main_env_prefix}-vpc"
   }
