@@ -1,0 +1,9 @@
+---
+- hosts: kubernetes
+  user: root
+
+  tasks:
+    - name: Deploy web-app with registration form on Kubernetes
+      command: kubectl apply -f cicd-deployment.yml
+    - name: Create service for web-app
+      command: kubectl apply -f cicd-service.yml

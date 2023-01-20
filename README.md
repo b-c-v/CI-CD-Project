@@ -2,7 +2,7 @@
 
 **_Description:_**
 
-CI/CD project Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Web Server
+CI/CD project Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Kubernetes==>Web Server
 
 When making changes to the GitHub repository with the simple Java application - Jenkins starts the process of building and testing it with Maven and transfers to Ansible server. Ansible starts the process of building the Docker image and copying it to DockerHub. After that, this image is uploaded from DockerHub to the Docker server and running.
 
@@ -28,7 +28,7 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ### 2.2 connect via SSH to instance, download to it and run a script [3.1_install_ansible_amazon.sh](3_Ansible/3.1_install_ansible_amazon.sh) and it will install Ansible, Docker and change hostname.
 
-### 2.3 create a user under which Ansible will connect to the Docker-server and the working directory of the project _(/opt/docker/)_. Run script [3.2_create_user_ansible.sh](3_Ansible/3.2_create_user_ansible.sh)
+### 2.3 create a user under which Ansible will connect to the Docker-server and in the working directory of the project _(/opt/docker/)_. Run script [3.2_create_user_ansible.sh](3_Ansible/3.2_create_user_ansible.sh)
 
 ### 2.4 change SSH-keys with servers:
 
@@ -44,6 +44,8 @@ ssh-keygen
 ```bash
 ssh-copy-id *ip_localhost* #it's necessary to exchange the SSH-key with the local server on behalf of the created user
 ssh-copy-id *ip_docker_server*
+ssh-copy-id *ip_kubernetes_server*
+
 ```
 
 ### 2.5 Login to DockerHub:
@@ -64,7 +66,7 @@ docker login
 
 ### 3.1 Launch a third AmazonLinux EC2 Instance and connect to the same security group as the previous two.
 
-### 3.2 connect via SSH to instance, download to it and run a script [1.1_install_packages_AmazonLinux.sh](1_Jenkins\1.1_install_packages_AmazonLinux.sh)
+### 3.2 connect via SSH to instance, download to it and run a script [1.1_install_packages_AmazonLinux.sh](1_Jenkins/1.1_install_packages_AmazonLinux.sh)
 
 It will install:
 
@@ -86,7 +88,7 @@ It will install plugins:
 ### 3.4 Create trigger to automatically start a job in Jenkins, when some changes are made to the GitHub repository
 
 - in settings GitHub repository with the project, specify the address of Jenkins-server and type of events to trigger this webhook _(http://ip_jenkins_server:8080/github-webhook/)_
-  ![](images\webhook_git.jpg)
+  ![](images/webhook_git.jpg)
 
 ### 3.5 Manually configure Jenkins
 
@@ -111,7 +113,7 @@ It will install plugins:
 ![](images/project_6.jpg)
 ![](images/project_7.jpg)
 
-> script to section "Exec command" is in file [3.5_script_to_project.txt](3_Ansible\3.5_script_to_project.txt)
+> script to section "Exec command" is in file [3.5_script_to_project.txt](3_Ansible/3.5_script_to_project.txt)
 
 - or from file [CICD_Ansible.xml](1_Jenkins/CICD_Ansible.xml) export settings of this project:
 
