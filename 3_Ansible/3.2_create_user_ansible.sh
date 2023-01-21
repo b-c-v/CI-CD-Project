@@ -22,15 +22,6 @@ sudo chown -R $user:$user /opt/docker/
 #change permissions to file because during creating docker image will be error "Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: …"
 sudo chmod 777 /var/run/docker.sock
 
-
-echo "
-*************************************************************************************************************************************
-Don't forget to uncomment line 'PasswordAuthentication yes' and comment line 'PasswordAuthentication no' in file /etc/ssh/sshd_config
-*************************************************************************************************************************************"
-echo "File will open after 3 seconds"
-sleep 3
-sudo nano /etc/ssh/sshd_config
-
 echo"
 *************************************************************************************************************************************
 Please add private IP addresses of this server and server with Docker to ansible hosts file
@@ -44,6 +35,14 @@ ip add
 echo "File will open after 5 seconds"
 sleep 5
 sudo nano /etc/ansible/hosts
+
+echo "
+*************************************************************************************************************************************
+Don't forget to uncomment line 'PasswordAuthentication yes' and comment line 'PasswordAuthentication no' in file /etc/ssh/sshd_config
+*************************************************************************************************************************************"
+echo "File will open after 3 seconds"
+sleep 3
+sudo nano /etc/ssh/sshd_config
 
 echo "
 *************************************************************************************************************************************

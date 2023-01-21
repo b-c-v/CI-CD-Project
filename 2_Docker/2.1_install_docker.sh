@@ -6,7 +6,7 @@
 sudo hostnamectl set-hostname docker
 
 #install Docker
-sudo yum update
+sudo yum update -y
 sudo yum install docker -y
 
 #Enable docker service at boot time

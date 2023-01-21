@@ -2,17 +2,17 @@
 
 **_Description:_**
 
-CI/CD project Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Kubernetes==>Web Server
+CI/CD project Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Kubernetes
 
-When making changes to the GitHub repository with the simple Java application - Jenkins starts the process of building and testing it with Maven and transfers to Ansible server. Ansible starts the process of building the Docker image and copying it to DockerHub. After that, this image is uploaded from DockerHub to the Docker server and running.
+When making changes to the GitHub repository with the simple Java application - Jenkins starts the process of building and testing it with Maven and transfers to Ansible server. Ansible starts the process of building the Docker image and copying it to DockerHub. After that, this image is uploaded from DockerHub to AWS EKS running.
 
-![](images/CI-CD-ansible.jpg)
+![](images/CI-CD-k8s.jpg)
 
 ---
 
 ## 1. Docker server
 
-### 1.1 launch AmazonLinux EC2 Instance and create a new Security group (allowing SSH and HTTP).
+### 1.1 launch AmazonLinux EC2 Instance and create a new Security group (allowing SSH (22) and HTTP (8080)).
 
 ### 1.2 connect via SSH to instance, download to it and run a script [2.1_install_docker.sh](2_Docker/2.1_install_docker.sh) and it will install Docker and change hostname.
 
@@ -22,15 +22,38 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ---
 
-## 2. Ansible server
+## 2. K8s server
 
-### 2.1 launch a second AmazonLinux EC2 Instance and connect to the same security group as the previous one.
+### 2.1 create IAM role for AWS Service (name k8s-role) ==> EC2 add Permissions policies:
 
-### 2.2 connect via SSH to instance, download to it and run a script [3.1_install_ansible_amazon.sh](3_Ansible/3.1_install_ansible_amazon.sh) and it will install Ansible, Docker and change hostname.
+- AmazonEC2FullAccess
+- AWSCloudFormationFullAccess
+- IAMFullAccess
 
-### 2.3 create a user under which Ansible will connect to the Docker-server and in the working directory of the project _(/opt/docker/)_. Run script [3.2_create_user_ansible.sh](3_Ansible/3.2_create_user_ansible.sh)
+### 2.2 create EC2 instance. Name is K8s. Same security group with Jenkins, Ansible, Docker servers. Attach create role: Advanced detail ==> IAM instance profile ==> select created before role
 
-### 2.4 change SSH-keys with servers:
+### 2.3 login as root and create password:
+
+```
+sudo -i
+passwd root
+```
+
+### 2.4 download and run [script](5_Kubernetes/5.1_install_packeges_K8s.sh) for installation packages
+
+### 2.5 download and run [SSH modify script](5_Kubernetes/5.2_ssh_modify.sh)
+
+---
+
+## 3. Ansible server
+
+### 3.1 launch a second AmazonLinux EC2 Instance and connect to the same security group as the previous one.
+
+### 3.2 connect via SSH to instance, download to it and run a script [3.1_install_ansible_amazon.sh](3_Ansible/3.1_install_ansible_amazon.sh) and it will install Ansible, Docker and change hostname.
+
+### 3.3 create a user under which Ansible will connect to the Docker-server and in the working directory of the project _(/opt/docker/)_. Run script [3.2_create_user_ansible.sh](3_Ansible/3.2_create_user_ansible.sh)
+
+### 3.4 change SSH-keys with servers:
 
 - generate SSH-key for created user:
 
@@ -44,23 +67,39 @@ ssh-keygen
 ```bash
 ssh-copy-id *ip_localhost* #it's necessary to exchange the SSH-key with the local server on behalf of the created user
 ssh-copy-id *ip_docker_server*
-ssh-copy-id *ip_kubernetes_server*
+ssh-copy-id *root@PRIVATE_IP_K8s-server*
 
 ```
 
-### 2.5 Login to DockerHub:
+### 3.5 login to DockerHub:
 
 ```bash
 docker login
 ```
 
-### 2.6 Copy files to directory _(/opt/docker/)_:
+### 3.6 copy files to directory _(/opt/docker/)_:
 
 - [Dockerfile](3_Ansible/Dockerfile)
 - [3.3_playbook_push_image.yml](3_Ansible/3.3_playbook_push_image.yml)
-- [3.4_playbook_run_container.yml](3_Ansible/3.4_playbook_run_container.yml)
+- [hosts.ini](3_Ansible/hosts.ini) and add information about private IP of K8s and Ansible servers
+- [kube_deploy.yml](5_Kubernetes/kube_deploy.yml)
 
 ---
+
+## 4. K8s server
+
+### 4. copy files [cicd-deployment.yml](5_Kubernetes/cicd-deployment.yml) and [cicd-service.yml](5_Kubernetes/cicd-service.yml) to folder **_/root/_**
+
+### 4.1 create cluster (it takes about 20 minutes). In AWS CloudFromation can see crating new Stack
+
+- Run command
+
+```
+eksctl create cluster --name k8s \
+--region us-east-1 \
+--node-type t2.small \
+--zones us-east-1a,us-east-1b
+```
 
 ## 3. Jenkins server
 
@@ -103,26 +142,18 @@ It will install plugins:
   ![](images/glob_conf_2.jpg)
   ![](images/glob_conf_3.jpg)
 
-### 3.6 Create new Item (Maven project)
+### 3.6 Create new Maven project
 
-![](images/project_1.jpg)
-![](images/project_2.jpg)
-![](images/project_3.jpg)
-![](images/project_4.jpg)
-![](images/project_5.jpg)
-![](images/project_6.jpg)
-![](images/project_7.jpg)
+![](images/Ansible_CI-CD.jpg)
 
-> script to section "Exec command" is in file [3.5_script_to_project.txt](3_Ansible/3.5_script_to_project.txt)
+### 3.7 Create new Freestyle project
 
-- or from file [CICD_Ansible.xml](1_Jenkins/CICD_Ansible.xml) export settings of this project:
+![](images/k8s-deploy.jpg)
 
-```bash
-java -jar jenkins-cli.jar -s http://localhost:8080/ -auth *your_user:your_token* -webSocket create-job Ansible_CI_CD < CICD_Ansible.xml)
+```
+ansible-playbook -i /opt/docker/hosts.ini /opt/docker/kube_deploy.yml
 ```
 
----
-
-## If you type in a link `http://ip_docker_server/webapp` in a browser, you can see
+- and by address http://LOAD_BALANCER_DNS:8080/webapp/ will see registration form.
 
 ![](images/registration_form.jpg)

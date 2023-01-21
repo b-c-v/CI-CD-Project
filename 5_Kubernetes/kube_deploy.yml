@@ -3,6 +3,8 @@
   user: root
 
   tasks:
+    - name: Delete deploy
+      command: kubectl delete -f cicd-deployment.yml
     - name: Deploy web-app with registration form on Kubernetes
       command: kubectl apply -f cicd-deployment.yml
     - name: Create service for web-app
