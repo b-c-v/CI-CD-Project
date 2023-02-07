@@ -9,6 +9,7 @@ When making changes to the GitHub repository with the simple Java application - 
 ![](images/CI-CD-terraform.jpg)
 
 ---
+
 ## 1. Preparing the environment for project implementation:
 
 ### 1.1 on your local computer (Ubuntu), download folder [4_Terraform](4_Terraform)
@@ -16,6 +17,7 @@ When making changes to the GitHub repository with the simple Java application - 
 ### 1.2 run script [1_install_terrafrom_Ubuntu.sh](4_Terraform/1_install_terrafrom_Ubuntu.sh) at the end - enter credentials to connect to AWS
 
 ### 1.3 at the root of the project, create a file "terraform.tfvars" and enter the values of variables. For example:
+
 ```bash
 main_vpc_cidr_block    = "10.0.0.0/16"
 main_subnet_cidr_block = "10.0.10.0/24"
@@ -27,11 +29,19 @@ main_my_publick_key_location = "~/.ssh/id_rsa.pub"
 main_image_name = "amzn2-ami-kernel-*-x86_64-gp2"
 ```
 
-### 1.4 start the porcess of creating EC2 instances
-```bash
-terraform init 
-terraform apply
+### 1.4 create ssh key with name aws in folder ~/.ssh/
+
 ```
+mkdir ~/.ssh
+cd ~/.ssh
+ssh-keygen -f aws
+```
+
+### 1.5 start the porcess of creating EC2 instances
+```bash
+terraform init
+terraform apply
+````
 
 ## 2. Docker server
 

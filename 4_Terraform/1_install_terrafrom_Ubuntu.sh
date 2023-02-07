@@ -1,11 +1,11 @@
-# Description: Iinstall packages on Ubuntu:
+# Description: Install packages on Ubuntu:
 # * Terraform
 # * AWS CLI
 
 #!/bin/bash
 
 #install terraform
-curl https://releases.hashicorp.com/terraform/1.3.6/terraform_1.3.6_linux_amd64.zip -o terraform.zip
+curl https://releases.hashicorp.com/terraform/1.3.7/terraform_1.3.7_linux_amd64.zip -o terraform.zip
 unzip terraform.zip
 sudo mv terraform /bin/
 rm terraform.zip
@@ -16,7 +16,6 @@ unzip awscliv2.zip
 sudo ./aws/install
 rm -r aws*
 
-
 #check versions of installed packeges
 echo "            
 ===============================================
@@ -26,7 +25,6 @@ echo "***************Terraform*****************"
 terraform -version
 echo "*******************AWS*******************"
 aws --version
-
 
 echo "Please enter your credentials to connect to AWS:"
 aws configure

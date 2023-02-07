@@ -86,6 +86,6 @@ resource "aws_instance" "cicd_public_server" {
   key_name                    = aws_key_pair.ssh-key.key_name
 
   tags = {
-    Name = "${var.ws_env_prefix}-public-server"
+    Name = "${var.ws_env_prefix}-public-server-${count.index}"
   }
 }
