@@ -6,3 +6,5 @@ variable "main_my_ip" {}
 variable "main_instance_type" {}
 variable "main_my_publick_key_location" {}
 variable "main_image_name" {}
+variable "main_private_count" {}
+variable "main_public_count" {}

@@ -10,29 +10,24 @@ output "private_ip_ansible" { #print in output private IP of ec2 instance
 
 
 locals {
-  host_private = [for i in module.name_module_myapp_webserver.ws_output_public_instance[0] : i.private_ip]
-  host_public  = [for i in module.name_module_myapp_webserver.ws_output_public_instance[0] : i.public_ip]
+  host_private = [for i in range(0, length(module.name_module_myapp_webserver.ws_output_public_instance[0])) : { "name" : "private_${i}", "ip" : module.name_module_myapp_webserver.ws_output_public_instance[0][i].private_ip }]
+  host_public  = [for i in range(0, length(module.name_module_myapp_webserver.ws_output_public_instance[0])) : { "name" : "public_${i}", "ip" : module.name_module_myapp_webserver.ws_output_public_instance[0][i].public_ip }]
 }
 
 locals {
-  private_ips = "${join("\n", local.host_private)}\n"
-  public_ips  = "${join("\n", local.host_public)}\n"
+  private_ips = "${join("\n", [for i in local.host_private : "${i.name} ansible_host=${i.ip}"])}\n"
+  public_ips  = "${join("\n", [for i in local.host_public : "${i.name} ansible_host=${i.ip}"])}\n"
 }
-
-
 
 resource "local_file" "inventory" {
   content  = <<EOF
-  [all:vars]
-  ansible_user=ec2-user
-  ansible_ssh_private_key_file=~/.ssh/aws
-
-[private]
 ${local.private_ips}
 
-[public]  
 ${local.public_ips}
-    
+
+[all:vars]
+ansible_user=ec2-user
+ansible_ssh_private_key_file=~/.ssh/aws   
   EOF
   filename = "inventory.ini"
 }

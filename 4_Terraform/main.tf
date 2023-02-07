@@ -16,6 +16,8 @@ module "name_module_myapp_webserver" {
   ws_instance_type           = var.main_instance_type
   ws_subnet_id               = module.vpc.public_subnets[0] #it back array of values but use subnet id from module vpc
   ws_avail_zone              = var.main_avail_zone
+  ws_private_count           = var.main_private_count
+  ws_public_count            = var.main_public_count
 
 }
 

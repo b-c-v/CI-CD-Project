@@ -61,7 +61,7 @@ resource "aws_key_pair" "ssh-key" {
 resource "aws_instance" "cicd_private_server" {
   ami                    = data.aws_ami.latest_amazon_linux_image.id
   instance_type          = var.ws_instance_type
-  count                  = 1 #amount of created EC2 instances
+  count                  = var.ws_private_count #amount of created EC2 instances
   subnet_id              = var.ws_subnet_id
   vpc_security_group_ids = [aws_security_group.cicd_sg.id]
   availability_zone      = var.ws_avail_zone
@@ -77,7 +77,7 @@ resource "aws_instance" "cicd_private_server" {
 resource "aws_instance" "cicd_public_server" {
   ami                    = data.aws_ami.latest_amazon_linux_image.id
   instance_type          = var.ws_instance_type
-  count                  = 2 #amount of created EC2 instances
+  count                  = var.ws_public_count #amount of created EC2 instances
   subnet_id              = var.ws_subnet_id
   vpc_security_group_ids = [aws_security_group.cicd_sg.id]
   availability_zone      = var.ws_avail_zone
