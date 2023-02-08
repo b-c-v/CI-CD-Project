@@ -1,0 +1,79 @@
+- name: Configure EC2 for Jenkins
+  hosts: public_0
+  become: yes
+
+  tasks:
+    - name: Change hostname
+      shell: hostnamectl set-hostname jenkins
+
+    - name: Update server
+      shell: yum update -y
+
+    - name: install Jenkins
+      shell: |
+        yum update –y
+        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+        yum upgrade
+        amazon-linux-extras install java-openjdk11 -y
+        yum install jenkins -y
+        systemctl enable jenkins
+        systemctl start jenkins
+    - name: put Jenkins password to variable
+      command: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_password
+
+    - name: print password to Jenkins
+      debug: msg={{ jenkins_password.stdout }}
+
+    - name: Install Git
+      package:
+        name: git
+        state: present
+
+    - name: Install Maven
+      package:
+        name: maven
+        state: present
+
+- name: Configure EC2 for Docker
+  hosts: public_1
+  become: yes
+
+  tasks:
+    - name: Change hostname
+      shell: hostnamectl set-hostname docker
+    - name: Update server
+      shell: yum update -y
+    - name: install Docker
+      package:
+        name: docker
+        state: present
+    - name: Enable Docker service at boot time
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Configure EC2 for Ansible
+  hosts: public_2
+  become: yes
+
+  tasks:
+    - name: Change hostname
+      shell: hostnamectl set-hostname ansible
+    - name: Update server
+      shell: yum update -y
+    - name: Install Ansible
+      shell: amazon-linux-extras install ansible2 -y
+
+    - name: Install Docker
+      package:
+        name: docker
+        state: present
+
+    - name: Enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes

@@ -12,9 +12,43 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ## 1. Preparing the environment for project implementation:
 
-### 1.1 on your local computer (Ubuntu), download folder [4_Terraform](4_Terraform)
+### 1.1 in folder /tmp/ on your local computer (Ubuntu), download folder [environment](environment)
 
 ### 1.2 run script [1_install_terrafrom_Ubuntu.sh](4_Terraform/1_install_terrafrom_Ubuntu.sh) at the end - enter credentials to connect to AWS
+
+<!-- надо еще установить ансибл
+
+sudo apt update
+sudo apt install software-properties-common  -y
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible  -y
+ansible --version -->
+
+<!-- надо установить Jenkins
+sudo apt update
+sudo apt install -y curl
+sudo apt install -y openjdk-11-jre
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get -y update
+sudo apt-get -y install jenkins
+sudo systemctl enable jenkins # Enable the Jenkins service to start at boot
+sudo systemctl start jenkins # Start Jenkins as a service
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+in Jenkins:
+1) Install plugin Terraform, Pipeline
+2) Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where it installed
+find where it installed (/usr/bin/):
+```
+whereis terraform
+```
+3) Create Jenkins job - pipeline
+
+
+
+
+-->
 
 ### 1.3 at the root of the project, create a file "terraform.tfvars" and enter the values of variables. For example:
 
@@ -38,10 +72,11 @@ ssh-keygen -f aws
 ```
 
 ### 1.5 start the porcess of creating EC2 instances
+
 ```bash
 terraform init
 terraform apply
-````
+```
 
 ## 2. Docker server
 
