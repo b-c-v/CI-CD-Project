@@ -19,8 +19,7 @@
         yum install jenkins -y
         systemctl enable jenkins
         systemctl start jenkins
-    - name: put Jenkins password to variable
-      command: cat /var/lib/jenkins/secrets/initialAdminPassword
+    - command: cat /var/lib/jenkins/secrets/initialAdminPassword
       register: jenkins_password
 
     - name: print password to Jenkins
@@ -39,6 +38,9 @@
 - name: Configure EC2 for Docker
   hosts: public_1
   become: yes
+  vars:
+    username: dockercicd
+    password: !test123
 
   tasks:
     - name: Change hostname
@@ -54,6 +56,40 @@
         name: docker
         state: started
         enabled: yes
+
+    - name: Add new user
+      user:
+        name: "{{ username }}"
+        password: "{{ password }}"
+        state: present
+        update_password: on_create
+      register: "{{ username }}"
+
+    - name: Add user to docker group
+      user:
+        name: "{{ username }}"
+        groups: docker
+        append: yes
+
+    - name: Create directory for project
+      file:
+        path: "/opt/docker"
+        state: directory
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Change SSH configuration
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "PasswordAuthentication no"
+        line: "PasswordAuthentication yes"
+        notify: restart ssh
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: ssh
+        state: restarted
 
 - name: Configure EC2 for Ansible
   hosts: public_2

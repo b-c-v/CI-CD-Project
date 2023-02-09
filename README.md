@@ -14,9 +14,9 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ### 1.1 in folder /tmp/ on your local computer (Ubuntu), download folder [environment](environment)
 
-### 1.2 run script [1_install_terrafrom_Ubuntu.sh](4_Terraform/1_install_terrafrom_Ubuntu.sh) at the end - enter credentials to connect to AWS
+### 1.2 run script [1_install_terraform_Ubuntu.sh](4_Terraform/1_install_terraform_Ubuntu.sh) at the end - enter credentials to connect to AWS
 
-<!-- надо еще установить ансибл
+<!-- надо установить ансибл
 
 sudo apt update
 sudo apt install software-properties-common  -y
@@ -34,21 +34,23 @@ sudo apt-get -y update
 sudo apt-get -y install jenkins
 sudo systemctl enable jenkins # Enable the Jenkins service to start at boot
 sudo systemctl start jenkins # Start Jenkins as a service
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword -->
 
-in Jenkins:
-1) Install plugin Terraform, Pipeline
-2) Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where it installed
-find where it installed (/usr/bin/):
+<!-- install git
+sudo apt install git -y -->
+
+<!-- in Jenkins:
+1) Install plugins Terraform, Pipeline, Git, GitHub, Ansible, AnsiColor, CloudBees AWS Credentials
+2) Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where it installed:
+ - Terraform. Find where it installed (/usr/bin/):
 ```
 whereis terraform
 ```
-3) Create Jenkins job - pipeline
-
-
-
-
--->
+- Ansible. Find where it installed (/usr/bin/)
+```
+which ansible
+```
+3) Create Jenkins job - pipeline -->
 
 ### 1.3 at the root of the project, create a file "terraform.tfvars" and enter the values of variables. For example:
 

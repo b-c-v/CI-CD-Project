@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Download files from GitHub') {
+            steps {
+                git branch: 'terraform', url: 'https://github.com/b-c-v/CI-CD-Project.git'
+            }
+        }
+        stage('Terraform initialize') {
+            steps {
+                sh 'cd $WORKSPACE/environment/4_Terraform/ && terraform init'
+            }
+        }
+        stage('Terraform apply') {
+            steps {
+                withCredentials([aws(credentialsId: 'cicd-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh 'cd $WORKSPACE/environment/4_Terraform/ && terraform apply --auto-approve'
+                }
+
+                sh 'sleep 30'
+            }
+        }
+
+        stage('Ansible') {
+            steps {
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible', inventory: '/tmp/inventory.ini', playbook: '$WORKSPACE/environment/5_Ansible/playbook.yml'
+            }
+        }
+    }
+}
