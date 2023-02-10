@@ -3,15 +3,23 @@
   become: yes
 
   tasks:
+    - name: Wait when instance will be ready
+      wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        delay: 5
+        timeout: 300
+        state: started
+
     - name: Change hostname
       shell: hostnamectl set-hostname jenkins
 
-    - name: install Jenkins
+    - name: Install Jenkins
       shell: |
-        yum update –y
+        yum update -y
         wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
         rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-        yum upgrade
+        yum upgrade -y
         amazon-linux-extras install java-openjdk11 -y
         yum install jenkins -y
         systemctl enable jenkins
@@ -110,7 +118,7 @@
         name: docker
         state: started
         enabled: yes
-    - name: solve error Got permission denied while trying to connect to the Docker daemon socket
+    - name: Solve error Got permission denied while trying to connect to the Docker daemon socket
       command: chmod 777 /var/run/docker.sock
       become: yes
       become_user: root
