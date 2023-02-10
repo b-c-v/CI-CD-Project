@@ -6,9 +6,6 @@
     - name: Change hostname
       shell: hostnamectl set-hostname jenkins
 
-    - name: Update server
-      shell: yum update -y
-
     - name: install Jenkins
       shell: |
         yum update –y
@@ -40,13 +37,15 @@
   become: yes
   vars:
     username: dockercicd
-    password: !test123
+    password: "!MoyCICD1234"
 
   tasks:
     - name: Change hostname
+      run_once: true
       shell: hostnamectl set-hostname docker
     - name: Update server
       shell: yum update -y
+
     - name: install Docker
       package:
         name: docker
@@ -63,8 +62,6 @@
         password: "{{ password }}"
         state: present
         update_password: on_create
-      register: "{{ username }}"
-
     - name: Add user to docker group
       user:
         name: "{{ username }}"
@@ -80,20 +77,21 @@
 
     - name: Change SSH configuration
       lineinfile:
-        dest: /etc/ssh/sshd_config
-        regexp: "PasswordAuthentication no"
+        path: /etc/ssh/sshd_config
+        regexp: "^(.*)PasswordAuthentication no(.*)$"
         line: "PasswordAuthentication yes"
-        notify: restart ssh
+      notify: Restart ssh
 
   handlers:
-    - name: restart ssh
-      service:
-        name: ssh
-        state: restarted
+    - name: Restart ssh
+      shell: service sshd restart
 
 - name: Configure EC2 for Ansible
   hosts: public_2
   become: yes
+  vars:
+    username: ansiblecicd
+    password: "!MoyCICD1234"
 
   tasks:
     - name: Change hostname
@@ -107,9 +105,47 @@
       package:
         name: docker
         state: present
-
     - name: Enable Docker service
       service:
         name: docker
         state: started
         enabled: yes
+    - name: solve error Got permission denied while trying to connect to the Docker daemon socket
+      command: chmod 777 /var/run/docker.sock
+      become: yes
+      become_user: root
+
+    - name: Add new user
+      user:
+        name: "{{ username }}"
+        password: "{{ password }}"
+        state: present
+        update_password: on_create
+    - name: Add user to docker group
+      user:
+        name: "{{ username }}"
+        groups: docker
+        append: yes
+    - name: Allow ansible user run command with sudo
+      lineinfile:
+        path: /etc/sudoers
+        insertafter: "^(.*)## Allows people in group wheel to run all commands(.*)$"
+        line: "{{ username }}  ALL=(ALL) ALL"
+
+    - name: Create directory for project
+      file:
+        path: "/opt/docker"
+        state: directory
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Change SSH configuration
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^(.*)PasswordAuthentication no(.*)$"
+        line: "PasswordAuthentication yes"
+      notify: Restart ssh
+
+  handlers:
+    - name: Restart ssh
+      shell: service sshd restart
