@@ -17,8 +17,6 @@ pipeline {
                 withCredentials([aws(credentialsId: 'cicd-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     sh 'cd $WORKSPACE/environment/4_Terraform/ && terraform apply --auto-approve'
                 }
-
-                sh 'sleep 30'
             }
         }
 
