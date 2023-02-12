@@ -1,6 +1,6 @@
-- name: Configure EC2 for Jenkins
+- name: ==== Configure EC2 for Jenkins ====
   hosts: public_0
-  become: yes
+  become: true
 
   tasks:
     - name: Wait when instance will be ready
@@ -67,6 +67,10 @@
         - maven-plugin
         - deploy
         - publish-over-ssh
+    - name: Restart Jenkins to make the plugin data available
+      service:
+        name: jenkins
+        state: restarted
 
     - name: Install Git
       package:
@@ -78,11 +82,12 @@
         name: maven
         state: present
 
-- name: Configure EC2 for Docker
+- name: ==== Configure EC2 for Docker ====
   hosts: public_1
-  become: yes
+  become: true
   vars:
-    username: dockercicd
+    docker_username: dockercicd
+    ansible_username: ansiblecicd
     password: "!MoyCICD1234"
 
   tasks:
@@ -101,24 +106,40 @@
         state: started
         enabled: yes
 
-    - name: Add new user
+    - name: Add Docker and Ansible users to system
       user:
-        name: "{{ username }}"
+        name: "{{ item.username }}"
         password: "{{ password }}"
         state: present
         update_password: on_create
-    - name: Add user to docker group
-      user:
-        name: "{{ username }}"
-        groups: docker
-        append: yes
+      loop:
+        - { username: "{{ docker_username }}" }
+        - { username: "{{ ansible_username }}" }
+
+        # CONFIGURATION FOR ANSIBLE USER
+    - name: Solve error Got permission denied while trying to connect to the Docker daemon socket
+      command: chmod 777 /var/run/docker.sock
+
+    - name: Allow ansible user run command with sudo
+      lineinfile:
+        path: /etc/sudoers
+        insertafter: "^(.*)## Allows people in group wheel to run all commands(.*)$"
+        line: "{{ ansible_username }}  ALL=(ALL) ALL"
+
+        # CONFIGURATION FOR DOCKER USER
 
     - name: Create directory for project
       file:
         path: "/opt/docker"
         state: directory
-        owner: "{{ username }}"
-        group: "{{ username }}"
+        owner: "{{ docker_username }}"
+        group: "{{ docker_username }}"
+
+    - name: Add Docker user to docker group
+      user:
+        name: "{{ docker_username }}"
+        groups: docker
+        append: yes
 
     - name: Change SSH configuration
       lineinfile:
@@ -126,14 +147,13 @@
         regexp: "^(.*)PasswordAuthentication no(.*)$"
         line: "PasswordAuthentication yes"
       notify: Restart ssh
-
   handlers:
     - name: Restart ssh
       shell: service sshd restart
 
-- name: Configure EC2 for Ansible
+- name: ==== Configure EC2 for Ansible ====
   hosts: public_2
-  become: yes
+  become: true
   vars:
     username: ansiblecicd
     password: "!MoyCICD1234"
@@ -155,10 +175,6 @@
         name: docker
         state: started
         enabled: yes
-    - name: Solve error Got permission denied while trying to connect to the Docker daemon socket
-      command: chmod 777 /var/run/docker.sock
-      become: yes
-      become_user: root
 
     - name: Add new user
       user:
@@ -171,11 +187,6 @@
         name: "{{ username }}"
         groups: docker
         append: yes
-    - name: Allow ansible user run command with sudo
-      lineinfile:
-        path: /etc/sudoers
-        insertafter: "^(.*)## Allows people in group wheel to run all commands(.*)$"
-        line: "{{ username }}  ALL=(ALL) ALL"
 
     - name: Create directory for project
       file:
@@ -184,13 +195,34 @@
         owner: "{{ username }}"
         group: "{{ username }}"
 
+    - name: Solve error Got permission denied while trying to connect to the Docker daemon socket
+      command: chmod 777 /var/run/docker.sock
+
     - name: Change SSH configuration
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^(.*)PasswordAuthentication no(.*)$"
         line: "PasswordAuthentication yes"
       notify: Restart ssh
-
   handlers:
     - name: Restart ssh
       shell: service sshd restart
+
+    - name: Allow ansible user run command with sudo
+      lineinfile:
+        path: /etc/sudoers
+        insertafter: "^(.*)## Allows people in group wheel to run all commands(.*)$"
+        line: "{{ username }}  ALL=(ALL) ALL"
+# echo"
+# *************************************************************************************************************************************
+# Please add private IP addresses of this server and server with Docker to ansible hosts file
+# *************************************************************************************************************************************
+# [docker]
+# xxx.xxx.xxx.xxx
+# [ansible]
+# xxx.xxx.xxx.xxx
+# *************************************************************************************************************************************"
+# ip add
+# echo "File will open after 5 seconds"
+# sleep 5
+# sudo nano /etc/ansible/hosts
