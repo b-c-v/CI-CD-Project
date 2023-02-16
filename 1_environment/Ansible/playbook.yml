@@ -34,10 +34,10 @@
         name: "*"
         state: latest
 
-    - name: Install java
+    - name: Install Java
       shell: amazon-linux-extras install java-openjdk11 -y
 
-    - name: Install jenkins
+    - name: Install Jenkins
       yum:
         name: jenkins
         state: latest
@@ -96,7 +96,7 @@
     - name: Update server
       shell: yum update -y
 
-    - name: install Docker
+    - name: Install Docker
       package:
         name: docker
         state: present
@@ -196,18 +196,16 @@
         owner: "{{ username }}"
         group: "{{ username }}"
 
+    - name: Copy inventory file to project directory
+      ansible.builtin.copy:
+        src: /tmp/inventory.ini
+        dest: /opt/docker/inventory.ini
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: "0644"
+
     - name: Solve error Got permission denied while trying to connect to the Docker daemon socket
       command: chmod 777 /var/run/docker.sock
-
-    - name: Change SSH configuration
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: "^(.*)PasswordAuthentication no(.*)$"
-        line: "PasswordAuthentication yes"
-      notify: Restart ssh
-  handlers:
-    - name: Restart ssh
-      shell: service sshd restart
 
     - name: Allow ansible user run command with sudo
       lineinfile:
@@ -218,3 +216,13 @@
     - name: Generate SSH key
       become_user: "{{ username }}"
       shell: ssh-keygen -q -b 2048 -t rsa -N "" -P "" -f ~/.ssh/id_rsa
+
+    - name: Change SSH configuration
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^(.*)PasswordAuthentication no(.*)$"
+        line: "PasswordAuthentication yes"
+      notify: Restart ssh
+  handlers:
+    - name: Restart ssh
+      shell: service sshd restart

@@ -38,6 +38,7 @@ main_image_name = "amzn2-ami-kernel-*-x86_64-gp2"
 
 ```
 ssh-keygen -f /tmp/aws
+sudo chown jenkins:jenkins /tmp/aws*
 ```
 
 ### 1.5 in Jenkins
@@ -62,31 +63,32 @@ which ansible
 
 1.5.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
 
-## 3. Ansible server
+## 2. Ansible server
 
-### 3.1 change SSH-keys with servers:
+<!-- ### 2.1 change SSH-keys with servers:
 
 - generate SSH-key for created user:
 
 ```bash
 su *your_user_name*
 ssh-keygen
-```
+``` -->
 
-- exchange ssh-key
+### 2.1 Exchange ssh-key
 
 ```bash
-ssh-copy-id *ip_localhost* #it's necessary to exchange the SSH-key with the local server on behalf of the created user
-ssh-copy-id *ip_docker_server*
+su *your_user_name*
+ssh-copy-id *private_ip_localhost* #it's necessary to exchange the SSH-key with the local server on behalf of the created user
+ssh-copy-id *private_ip_docker_server*
 ```
 
-### 3.2 Login to DockerHub:
+### 2.2 Login to DockerHub:
 
 ```bash
 docker login
 ```
 
-### 3.3 Copy files to directory _(/opt/docker/)_:
+### 2.3 Copy files to directory _(/opt/docker/)_:
 
 - [Dockerfile](3_Ansible/Dockerfile)
 - [3.3_playbook_push_image.yml](3_Ansible/3.3_playbook_push_image.yml)
