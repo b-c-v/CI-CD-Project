@@ -9,20 +9,22 @@ pipeline {
         }
         stage('Terraform initialize') {
             steps {
-                sh 'cd $WORKSPACE/environment/Terraform/ && terraform init'
+                sh 'cd $WORKSPACE/1_environment/Terraform/ && terraform init'
             }
         }
         stage('Terraform apply') {
             steps {
                 withCredentials([aws(credentialsId: 'cicd-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh 'cd $WORKSPACE/environment/Terraform/ && terraform apply --auto-approve'
+                    sh 'cd $WORKSPACE/1_environment/Terraform/ && terraform apply --auto-approve'
                 }
             }
         }
 
         stage('Ansible') {
             steps {
-                ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible', inventory: '/tmp/inventory.ini', playbook: '$WORKSPACE/environment/Ansible/playbook.yml'
+                ansiColor('xterm') {
+                    ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible', inventory: '/tmp/inventory.ini', playbook: '$WORKSPACE/1_environment/Ansible/playbook.yml'
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-- name: ==== Configure EC2 for Jenkins ====
+- name: ==== 1. Configure EC2 for Jenkins ====
   hosts: public_0
   become: true
 
@@ -82,13 +82,13 @@
         name: maven
         state: present
 
-- name: ==== Configure EC2 for Docker ====
+- name: ==== 2. Configure EC2 for Docker ====
   hosts: public_1
   become: true
   vars:
     docker_username: dockercicd
     ansible_username: ansiblecicd
-    password: "!MoyCICD1234"
+    password: cicd1234!
 
   tasks:
     - name: Change hostname
@@ -109,7 +109,7 @@
     - name: Add Docker and Ansible users to system
       user:
         name: "{{ item.username }}"
-        password: "{{ password }}"
+        password: "{{ password | password_hash('sha512') }}"
         state: present
         update_password: on_create
       loop:
@@ -117,6 +117,7 @@
         - { username: "{{ ansible_username }}" }
 
         # CONFIGURATION FOR ANSIBLE USER
+
     - name: Solve error Got permission denied while trying to connect to the Docker daemon socket
       command: chmod 777 /var/run/docker.sock
 
@@ -151,12 +152,12 @@
     - name: Restart ssh
       shell: service sshd restart
 
-- name: ==== Configure EC2 for Ansible ====
+- name: ==== 3. Configure EC2 for Ansible ====
   hosts: public_2
   become: true
   vars:
     username: ansiblecicd
-    password: "!MoyCICD1234"
+    password: cicd1234!
 
   tasks:
     - name: Change hostname
@@ -179,7 +180,7 @@
     - name: Add new user
       user:
         name: "{{ username }}"
-        password: "{{ password }}"
+        password: "{{ password | password_hash('sha512') }}"
         state: present
         update_password: on_create
     - name: Add user to docker group
@@ -213,16 +214,7 @@
         path: /etc/sudoers
         insertafter: "^(.*)## Allows people in group wheel to run all commands(.*)$"
         line: "{{ username }}  ALL=(ALL) ALL"
-# echo"
-# *************************************************************************************************************************************
-# Please add private IP addresses of this server and server with Docker to ansible hosts file
-# *************************************************************************************************************************************
-# [docker]
-# xxx.xxx.xxx.xxx
-# [ansible]
-# xxx.xxx.xxx.xxx
-# *************************************************************************************************************************************"
-# ip add
-# echo "File will open after 5 seconds"
-# sleep 5
-# sudo nano /etc/ansible/hosts
+
+    - name: Generate SSH key
+      become_user: "{{ username }}"
+      shell: ssh-keygen -q -b 2048 -t rsa -N "" -P "" -f ~/.ssh/id_rsa

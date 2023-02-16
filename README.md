@@ -14,14 +14,14 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ### 1.1 On your local computer (Ubuntu), download directory [1_environment](1_environment)
 
-### 1.2 Run the [script](1_environment/1_install_packages_Ubuntu.sh). At the end of the installation process enter credentials to connect to AWS
+### 1.2 Run the script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh). At the end of the installation process enter credentials to connect to AWS
 
 ```
 chmod +x 1_install_packages_Ubuntu.sh
 source 1_install_packages_Ubuntu.sh
 ```
 
-### 1.3 In derectory \1_environment\4_Terraform\ create a file "terraform.tfvars" and enter the values of variables. For example:
+### 1.3 In derectory \1_environment\Terraform\ create a file "terraform.tfvars" and enter the values of variables. For example:
 
 ```bash
 main_vpc_cidr_block    = "10.0.0.0/16"
@@ -37,29 +37,30 @@ main_image_name = "amzn2-ami-kernel-*-x86_64-gp2"
 ### 1.4 Create ssh key with name aws in folder ~/.ssh/
 
 ```
-ssh-keygen -f ~/.ssh/aws
+ssh-keygen -f /tmp/aws
 ```
 
 ### 1.5 in Jenkins
 
-1.5.1 Install plugins: Terraform, Pipeline, Git, GitHub, Ansible, AnsiColor, CloudBees AWS Credentials
-1.5.2 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
+1.5.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
 
-- Terraform. Find where it installed (/usr/bin/):
+- Terraform. Find where it installed:
 
 ```
 whereis terraform
 ```
 
-- Ansible. Find where it installed (/usr/bin/)
+- Ansible. Find where it installed
 
 ```
 which ansible
 ```
 
+![](images/env_jenkins_global.jpg)
+
+1.5.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
+
 1.5.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
-
-
 
 ## 3. Ansible server
 
