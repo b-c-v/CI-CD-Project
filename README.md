@@ -63,7 +63,7 @@ which ansible
 
 1.5.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
 
-## 2. Ansible server
+## 2. Ansible server (public_2)
 
 <!-- ### 2.1 change SSH-keys with servers:
 
@@ -78,8 +78,8 @@ ssh-keygen
 
 ```bash
 su *your_user_name*
-ssh-copy-id *private_ip_localhost* #it's necessary to exchange the SSH-key with the local server on behalf of the created user
-ssh-copy-id *private_ip_docker_server*
+ssh-copy-id *private_ip_localhost* (private_2) #it's necessary to exchange the SSH-key with the local server on behalf of the created user
+ssh-copy-id *private_ip_docker_server* (private_1)
 ```
 
 ### 2.2 Login to DockerHub:
@@ -96,7 +96,7 @@ docker login
 
 ---
 
-## 4. Jenkins server
+## 4. Jenkins server (public_0)
 
 ### 4.1 Create trigger to automatically start a job in Jenkins, when some changes are made to the GitHub repository
 
@@ -136,6 +136,6 @@ java -jar jenkins-cli.jar -s http://localhost:8080/ -auth *your_user:your_token*
 
 ---
 
-## If you type in a link `http://ip_docker_server/webapp` in a browser, you can see
+## If you type in a link `http://ip_docker_server(public_1)/webapp` in a browser, you can see
 
 ![](images/registration_form.jpg)

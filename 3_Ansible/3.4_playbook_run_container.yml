@@ -1,6 +1,6 @@
 ---
 - name: Run Docker container with Java app on Tomcat server
-  hosts: public_1
+  hosts: private_1
 
   tasks:
     - name: stop existing container

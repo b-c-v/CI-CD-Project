@@ -1,6 +1,6 @@
 ---
 - name: Create Docker image with Ansible
-  hosts: public_2
+  hosts: private_2
   tasks:
     - name: create Docker image
       command: docker image build -t tomcatcicd:latest .
