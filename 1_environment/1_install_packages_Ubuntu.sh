@@ -1,11 +1,16 @@
-# Description: Install packages on Ubuntu:
-# * Ansible
-# * Jenkins
-# * Git
-# * Terraform
-# * AWS CLI
+# Description:
+# Change hostname
+# Install packages on Ubuntu:
+# Ansible
+# Jenkins
+# Git
+# Terraform
+# AWS CLI
 
 #!/bin/bash
+
+# change hostname of server
+sudo hostnamectl set-hostname cicd
 
 # install Ansible
 sudo apt update -y
@@ -22,7 +27,7 @@ sudo apt-get -y install jenkins
 sudo systemctl enable jenkins # Enable the Jenkins service to start at boot
 sudo systemctl start jenkins  # Start Jenkins as a service
 
-#install plugins Jenkins
+# install plugins Jenkins
 token=$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)
 wget -nc http://localhost:8080/jnlpJars/jenkins-cli.jar #-nc  skip downloads that would download to existing files ()
 
@@ -74,6 +79,3 @@ echo "***************Terraform*****************"
 terraform -version
 echo "*******************AWS*******************"
 aws --version
-
-# echo "Please enter your credentials to connect to AWS:" don't required because use module Jenkins. Check!
-# aws configure

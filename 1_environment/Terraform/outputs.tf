@@ -27,7 +27,7 @@ ${local.public_ips}
 
 [all:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=/tmp/aws   
+ansible_ssh_private_key_file=/cicd/aws   
   EOF
-  filename = pathexpand("/tmp/inventory.ini")
+  filename = pathexpand("/cicd/inventory.ini")
 }

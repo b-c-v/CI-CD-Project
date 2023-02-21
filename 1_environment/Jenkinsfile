@@ -23,7 +23,7 @@ pipeline {
         stage('Ansible') {
             steps {
                 ansiColor('xterm') {
-                    ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible', inventory: '/tmp/inventory.ini', playbook: '$WORKSPACE/1_environment/Ansible/playbook.yml'
+                    ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible', inventory: '/cicd/inventory.ini', playbook: '$WORKSPACE/1_environment/Ansible/playbook.yml'
                 }
             }
         }

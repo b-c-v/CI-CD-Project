@@ -14,36 +14,24 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ### 1.1 On your local computer (Ubuntu), download directory [1_environment](1_environment)
 
-### 1.2 Run the script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh). At the end of the installation process enter credentials to connect to AWS
+### 1.2 Run the script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh)
 
 ```
 chmod +x 1_install_packages_Ubuntu.sh
 source 1_install_packages_Ubuntu.sh
 ```
 
-### 1.3 In derectory \1_environment\Terraform\ create a file "terraform.tfvars" and enter the values of variables. For example:
-
-```bash
-main_vpc_cidr_block    = "10.0.0.0/16"
-main_subnet_cidr_block = "10.0.10.0/24"
-main_avail_zone        = "eu-central-1a"
-main_env_prefix        = "CICD"
-main_my_ip             = "0.0.0.0/0"
-main_instance_type     = "t2.micro"
-main_my_publick_key_location = "~/.ssh/id_rsa.pub"
-main_image_name = "amzn2-ami-kernel-*-x86_64-gp2"
-```
-
-### 1.4 Create ssh key with name aws in folder ~/.ssh/
+### 1.43 Create folder /cicd/ and SSH-key with name "aws"
 
 ```
-ssh-keygen -f /tmp/aws
-sudo chown jenkins:jenkins /tmp/aws*
+sudo mkdir /cicd
+sudo ssh-keygen -f /cicd/aws
+sudo chown jenkins:jenkins /cicd -R
 ```
 
-### 1.5 in Jenkins
+### 1.4 In Jenkins
 
-1.5.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
+1.4.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
 
 - Terraform. Find where it installed:
 
@@ -59,20 +47,11 @@ which ansible
 
 ![](images/env_jenkins_global.jpg)
 
-1.5.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
+1.4.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
 
-1.5.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
+1.4.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
 
 ## 2. Ansible server (public_2)
-
-<!-- ### 2.1 change SSH-keys with servers:
-
-- generate SSH-key for created user:
-
-```bash
-su *your_user_name*
-ssh-keygen
-``` -->
 
 ### 2.1 Exchange ssh-key
 
