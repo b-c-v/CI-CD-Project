@@ -1,3 +1,0 @@
-ansible-playbook -i/opt/docker/inventory.ini /opt/docker/3.3_playbook_push_image.yml;
-sleep 10;
-ansible-playbook -i/opt/docker/inventory.ini /opt/docker/3.4_playbook_run_container.yml;

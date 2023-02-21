@@ -1,10 +1,12 @@
-# v1.2 CI/CD pipeline
+# v1.2 CI/CD project
 
 **_Description:_**
 
-CI/CD project Terraform ==> Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Web Server
+- Preparing the environment with Jenkins==>Terraform==>Ansible
+- CI/CD pipeline with Git==>GitHub==>Jenkins==>Maven==>Ansible==>Tomcat&Docker==>DockerHub==>Web Server
 
-When making changes to the GitHub repository with the simple Java application - Jenkins starts the process of building and testing it with Maven and transfers to Ansible server. Ansible starts the process of building the Docker image and copying it to DockerHub. After that, this image is uploaded from DockerHub to the Docker server and running.
+To prepare deployment environment, use Jenkins, Terraform, and Ansible, installing them and configuring Jenkins project accordingly.
+After committing changes to GitHub repository, Jenkins will build and test the application with Maven before transferring it to the Ansible server. There, Ansible will build a Docker image and send it to DockerHub before uploading it to the Docker server and launching it.
 
 ![](images/CI-CD-terraform.jpg)
 
@@ -12,16 +14,14 @@ When making changes to the GitHub repository with the simple Java application - 
 
 ## 1. Preparing the environment for project implementation:
 
-### 1.1 On your local computer (Ubuntu), download directory [1_environment](1_environment)
-
-### 1.2 Run the script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh)
+### 1.1 On your local computer (Ubuntu), download and run the script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh)
 
 ```
 chmod +x 1_install_packages_Ubuntu.sh
 source 1_install_packages_Ubuntu.sh
 ```
 
-### 1.43 Create folder /cicd/ and SSH-key with name "aws"
+### 1.2 Create folder /cicd/ and SSH-key with name "aws"
 
 ```
 sudo mkdir /cicd
@@ -29,9 +29,9 @@ sudo ssh-keygen -f /cicd/aws
 sudo chown jenkins:jenkins /cicd -R
 ```
 
-### 1.4 In Jenkins
+### 1.3 In Jenkins
 
-1.4.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
+1.3.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
 
 - Terraform. Find where it installed:
 
@@ -47,16 +47,16 @@ which ansible
 
 ![](images/env_jenkins_global.jpg)
 
-1.4.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
+1.3.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
 
-1.4.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
+1.3.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
 
 ## 2. Ansible server (public_2)
 
 ### 2.1 Exchange ssh-key
 
 ```bash
-su *your_user_name*
+su *your_user_name* (ansiblecicd)
 ssh-copy-id *private_ip_localhost* (private_2) #it's necessary to exchange the SSH-key with the local server on behalf of the created user
 ssh-copy-id *private_ip_docker_server* (private_1)
 ```
@@ -84,7 +84,7 @@ docker login
 
 ### 4.2 Manually configure Jenkins
 
-- Manage Jenkins ==> Configure System ==> Publish over SSH add IP address of Ansible-server, username and created user password.
+- Manage Jenkins ==> Configure System ==> Publish over SSH add private IP address of Ansible-server (private_2), username and created user password.
 
   ![](images/ansible_ssh.jpg)
 
@@ -92,25 +92,17 @@ docker login
 
 - Manage Jenkins ==> Global Tool Configuration ==> configure GIT, JDK and Maven
   ![](images/glob_conf_1.jpg)
-  ![](images/glob_conf_2.jpg)
-  ![](images/glob_conf_3.jpg)
 
 ### 4.3 Create new Item (Maven project)
 
 ![](images/project_1.jpg)
-![](images/project_2.jpg)
-![](images/project_3.jpg)
-![](images/project_4.jpg)
-![](images/project_5.jpg)
-![](images/project_6.jpg)
-![](images/project_7.jpg)
 
-> script to section "Exec command" is in file [3.5_script_to_project.txt](3_Ansible\3.5_script_to_project.txt)
+> script to section "Exec command":
 
-- or from file [CICD_Ansible.xml](1_Jenkins/CICD_Ansible.xml) export settings of this project:
-
-```bash
-java -jar jenkins-cli.jar -s http://localhost:8080/ -auth *your_user:your_token* -webSocket create-job Ansible_CI_CD < CICD_Ansible.xml)
+```
+ansible-playbook -i/opt/docker/inventory.ini /opt/docker/3.3_playbook_push_image.yml;
+sleep 10;
+ansible-playbook -i/opt/docker/inventory.ini /opt/docker/3.4_playbook_run_container.yml;
 ```
 
 ---
