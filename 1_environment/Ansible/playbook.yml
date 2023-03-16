@@ -62,10 +62,10 @@
         url: http://localhost:8080
         timeout: 90
       with_items:
-        - git
+        # - git
         - github
         - maven-plugin
-        - deploy
+        # - deploy
         - publish-over-ssh
 
     - name: Restart Jenkins to make the plugin data available

@@ -14,14 +14,21 @@ After committing changes to GitHub repository, Jenkins will build and test the a
 
 ## 1. Preparing the environment for project implementation:
 
-### 1.1 On your local computer (Ubuntu), download and run the script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh)
+### 1.1 On your local computer (Ubuntu), download and run a script [1_install_packages_Ubuntu.sh](1_environment/1_install_packages_Ubuntu.sh)
 
 ```
 chmod +x 1_install_packages_Ubuntu.sh
 source 1_install_packages_Ubuntu.sh
 ```
 
-### 1.2 Create folder /cicd/ and SSH-key with name "aws"
+### 1.2 Create S3 bucket for saving terraform.tfstate. Download and run a script [2_create_S3bucket](1_environment/2_create_S3bucket.sh)
+
+```
+chmod +x 2_create_S3bucket.sh
+./2_create_S3bucket.sh
+```
+
+### 1.3 Create folder /cicd/ and SSH-key with name "aws"
 
 ```
 sudo mkdir /cicd
@@ -29,9 +36,9 @@ sudo ssh-keygen -f /cicd/aws
 sudo chown jenkins:jenkins /cicd -R
 ```
 
-### 1.3 In Jenkins
+### 1.4 In Jenkins
 
-1.3.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
+1.4.1 Jenkins ==> Manage Jenkins ==> Global Tool Configuration add information where installed:
 
 - Terraform. Find where it installed:
 
@@ -47,9 +54,9 @@ which ansible
 
 ![](images/env_jenkins_global.jpg)
 
-1.3.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
+1.4.2 Jenkins ==> Manage Jenkins ==> Manage Credentials ==> (global) ==> Add credentials ==> AWS Credentials Add credentials to connect to AWS (ID: cicd-credentials)
 
-1.3.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
+1.4.3 Create Jenkins pipeline job, paste code from [Jenkinsfile](1_environment/Jenkinsfile) and run. The process of launching three servers using the Terraform and their configuration using the Ansible will begin.
 
 ## 2. Ansible server (public_2)
 

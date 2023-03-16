@@ -1,10 +1,15 @@
 # AWS create infrastructure with existing 
 #prefix ws_ means that this variable use in module webserver
 #prefix main_ means that this variable use in main Terraform fail
-
-provider "aws" {
-  region = "eu-central-1"
+terraform {
+  backend "s3" {
+    bucket = "cicd-terraform-state-2023-03-16"
+    key    = "CICD/terraform/terraform.tfstate"
+    region = "eu-central-1"
+  }
 }
+
+provider "aws" {}
 
 module "name_module_myapp_webserver" {
   source                     = "./modules/webserver"
