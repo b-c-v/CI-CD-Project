@@ -61,7 +61,7 @@
         url_password: "{{ jenkins_password.stdout }}"
         url: http://localhost:8080
         timeout: 90
-      with_items:
+      loop:
         # - git
         - github
         - maven-plugin
